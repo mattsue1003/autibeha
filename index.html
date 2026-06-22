@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>捏人行為處理指引｜自閉症成人個案</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --teal:#0f766e; --seafoam:#5e9d97; --seafoam-soft:#d6ece9;
+    --amber:#d97706; --amber-soft:#fdebd3; --rose:#be4263; --rose-soft:#f7dde4;
+    --ink:#1f2d2c; --muted:#5b6f6d; --paper:#fbfaf6; --card:#ffffff;
+    --line:#e3e7e4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif;
+    background:var(--paper); color:var(--ink); line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* progress bar */
+  #progress{position:fixed;top:0;left:0;height:4px;width:0;
+    background:linear-gradient(90deg,var(--teal),var(--seafoam));z-index:200;transition:width .1s}
+  /* header */
+  header{
+    background:linear-gradient(135deg,var(--teal),#0b5a54);
+    color:#fff;padding:64px 24px 56px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;right:-60px;bottom:-60px;
+    width:240px;height:240px;border-radius:50%;
+    background:radial-gradient(circle,rgba(94,157,151,.45),transparent 70%)}
+  .wrap{max-width:860px;margin:0 auto}
+  .eyebrow{display:inline-block;font-size:.8rem;letter-spacing:.18em;
+    background:rgba(255,255,255,.15);padding:6px 14px;border-radius:999px;margin-bottom:18px}
+  header h1{font-size:2.1rem;font-weight:800;line-height:1.3;margin-bottom:12px}
+  header p{font-size:1.05rem;opacity:.92;max-width:620px}
+  /* TOC */
+  nav.toc{max-width:860px;margin:-28px auto 0;padding:0 24px;position:relative;z-index:10}
+  .toc-inner{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:20px 22px;box-shadow:0 12px 30px rgba(15,118,110,.08);
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .toc-inner a{display:flex;gap:10px;align-items:center;text-decoration:none;
+    color:var(--ink);font-size:.92rem;padding:8px 10px;border-radius:10px;transition:.2s}
+  .toc-inner a:hover{background:var(--seafoam-soft);color:var(--teal)}
+  .toc-inner a .n{font-weight:800;color:var(--seafoam);font-size:.85rem;min-width:20px}
+  main{max-width:860px;margin:0 auto;padding:48px 24px 80px}
+  section{margin-bottom:40px;scroll-margin-top:24px}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .sec-head .num{font-size:1.6rem;font-weight:800;color:#fff;background:var(--teal);
+    width:46px;height:46px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;flex-shrink:0}
+  .sec-head h2{font-size:1.4rem;font-weight:800}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:24px 26px;box-shadow:0 4px 14px rgba(31,45,44,.04)}
+  .card p{margin-bottom:10px;color:var(--muted)}
+  .card p strong,.card li strong{color:var(--ink)}
+  ul.clean{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:6px}
+  ul.clean li{position:relative;padding-left:30px;color:var(--muted)}
+  ul.clean li::before{content:"";position:absolute;left:6px;top:11px;width:9px;height:9px;
+    border-radius:50%;background:var(--seafoam)}
+  /* accent variants */
+  .accent-amber .num{background:var(--amber)}
+  .accent-amber ul.clean li::before{background:var(--amber)}
+  .accent-rose .num{background:var(--rose)}
+  .accent-rose ul.clean li::before{background:var(--rose)}
+  /* callout */
+  .callout{border-left:4px solid var(--amber);background:var(--amber-soft);
+    padding:14px 18px;border-radius:0 12px 12px 0;margin-top:16px;color:#7a4a07;font-size:.95rem}
+  .callout.key{border-color:var(--rose);background:var(--rose-soft);color:#8a2342}
+  .tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.05em;
+    padding:3px 9px;border-radius:6px;margin-right:6px}
+  .tag.pos{background:var(--seafoam-soft);color:var(--teal)}
+  .tag.ext{background:#eee;color:#555}
+  /* download block */
+  .dl{background:linear-gradient(135deg,#0f766e,#5e9d97);border-radius:18px;
+    padding:34px 30px;color:#fff;text-align:center;margin-top:8px}
+  .dl h3{font-size:1.3rem;margin-bottom:8px}
+  .dl p{opacity:.92;margin-bottom:22px;font-size:.95rem}
+  .btn{display:inline-flex;align-items:center;gap:9px;background:#fff;color:var(--teal);
+    border:none;font-family:inherit;font-size:1rem;font-weight:800;padding:14px 28px;
+    border-radius:999px;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.18);transition:.2s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(0,0,0,.24)}
+  .btn:active{transform:translateY(0)}
+  .btn svg{width:20px;height:20px}
+  .dl small{display:block;margin-top:14px;opacity:.8;font-size:.82rem}
+  footer{text-align:center;padding:36px 24px;color:var(--muted);font-size:.85rem;
+    border-top:1px solid var(--line)}
+  /* ABC preview */
+  .abc-prev{margin-top:20px;background:#fff;border:1px solid var(--line);border-radius:12px;
+    overflow:hidden}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+  th{background:var(--seafoam-soft);color:var(--teal);font-weight:700}
+  td{color:var(--muted);height:42px}
+  @media(max-width:600px){
+    header h1{font-size:1.6rem}
+    .sec-head h2{font-size:1.18rem}
+    .card{padding:18px 18px}
+    .abc-prev{overflow-x:auto}
+    table{min-width:560px}
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">教保員工作指引</span>
+    <h1>捏人行為處理指引<br>自閉症成人個案</h1>
+    <p>給身障日照中心教保員老師參考。聚焦理解行為、預防觸發、教導替代表達，並以增強原理建立正向循環。</p>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#s1"><span class="n">1</span>先理解行為</a>
+    <a href="#s2"><span class="n">2</span>行為當下</a>
+    <a href="#s3"><span class="n">3</span>預防勝於處理</a>
+    <a href="#s4"><span class="n">4</span>教替代行為</a>
+    <a href="#s5"><span class="n">5</span>增強好行為</a>
+    <a href="#s6"><span class="n">6</span>團隊一致與紀錄</a>
+    <a href="#s7"><span class="n">7</span>專業支援</a>
+    <a href="#dl"><span class="n">★</span>ABC 紀錄表</a>
+  </div>
+</nav>
+
+<main>
+  <section id="s1">
+    <div class="sec-head"><div class="num">1</div><h2>先理解行為</h2></div>
+    <div class="card">
+      <p>捏人多半是<strong>「溝通」而非惡意</strong>。它常出現在這些時刻：</p>
+      <ul class="clean">
+        <li>特定聲音造成<strong>感官過載</strong></li>
+        <li>要求或活動<strong>被打斷</strong></li>
+        <li>例行流程<strong>被改變</strong></li>
+        <li>想表達「我不要／我想停」卻<strong>說不出口</strong></li>
+      </ul>
+      <div class="callout">先找出觸發點，才能真正預防，而不只是事後制止。當下有效、隔天再犯，正是因為根本觸發點還沒被解決。</div>
+    </div>
+  </section>
+
+  <section id="s2" class="accent-amber">
+    <div class="sec-head"><div class="num">2</div><h2>行為當下這樣做</h2></div>
+    <div class="card">
+      <ul class="clean">
+        <li>用<strong>堅定、平穩</strong>的語氣制止，搭配簡短手勢或圖卡（「停」「不可以」）。</li>
+        <li>避免長篇說教、不情緒化、不大聲斥責——<strong>過度反應反而會強化行為</strong>。</li>
+        <li>制止後<strong>不立刻給予大量關注</strong>（包含負面關注），降低行為被增強的機會。</li>
+        <li>確保自身與其他個案<strong>安全</strong>，必要時拉開距離、調整站位。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="s3">
+    <div class="sec-head"><div class="num">3</div><h2>預防勝於處理</h2></div>
+    <div class="card">
+      <ul class="clean">
+        <li>對聲音敏感：提供<strong>降噪耳機</strong>、座位遠離音源。</li>
+        <li>維持<strong>可預測流程</strong>，改變前用視覺時間表預告。</li>
+        <li>觀察情緒升高的前兆，在他不耐煩前<strong>提前轉移</strong>或給替代選擇。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="s4" class="accent-rose">
+    <div class="sec-head"><div class="num">4</div><h2>教替代行為（關鍵）</h2></div>
+    <div class="card">
+      <p>光制止不教替代，行為很難消退。協助個案改用<strong>安全方式</strong>表達：</p>
+      <ul class="clean">
+        <li>「我需要休息」<strong>字卡／圖卡</strong></li>
+        <li><strong>拍桌或舉牌</strong>代替捏人</li>
+        <li>提供可捏的<strong>減壓小物</strong></li>
+      </ul>
+      <div class="callout key">這是整套策略的核心：讓個案有一個比捏人更省力、更有效的方式達到目的。</div>
+    </div>
+  </section>
+
+  <section id="s5">
+    <div class="sec-head"><div class="num">5</div><h2>用增強強化好行為</h2></div>
+    <div class="card">
+      <ul class="clean">
+        <li><span class="tag pos">正增強</span>他沒捏人、好好表達時，<strong>立即、明確</strong>稱讚或給他喜歡的活動／物品。</li>
+        <li><span class="tag ext">消弱</span>捏人時以<strong>最低限度、中性</strong>的方式制止，不給情緒、不說教。</li>
+      </ul>
+      <div class="callout">原則：讓「<strong>正確表達有好處、捏人沒好處</strong>」變得清楚。比起處罰或隔離，這種差別增強對成人個案更有效，也更合乎倫理與法規。</div>
+    </div>
+  </section>
+
+  <section id="s6" class="accent-amber">
+    <div class="sec-head"><div class="num">6</div><h2>團隊一致與紀錄</h2></div>
+    <div class="card">
+      <ul class="clean">
+        <li>全中心採用<strong>同一套</strong>處理方式，避免個案混亂。</li>
+        <li>記錄每次發生的<strong>前因—行為—後果（ABC）</strong>，作為調整依據。</li>
+        <li>個案造成他人或員工<strong>瘀青時，務必通報主管並留紀錄</strong>，涉及個案與員工安全。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="s7" class="accent-rose">
+    <div class="sec-head"><div class="num">7</div><h2>尋求專業支援</h2></div>
+    <div class="card">
+      <p>成人、長期的行為，建議連結<strong>職能治療師或行為治療師</strong>做正式評估，必要時由<strong>精神科醫師</strong>評估是否有未處理的身體不適或情緒因素。</p>
+    </div>
+  </section>
+
+  <section id="dl">
+    <div class="sec-head"><div class="num" style="background:var(--seafoam)">★</div><h2>ABC 行為紀錄表</h2></div>
+    <div class="card" style="margin-bottom:18px">
+      <p>持續記錄每次行為的 <strong>A 前因（Antecedent）→ B 行為（Behavior）→ C 後果（Consequence）</strong>，是找出觸發點、調整策略最重要的依據。下方可下載空白紀錄表，列印給中心使用。</p>
+      <div class="abc-prev">
+        <table>
+          <thead>
+            <tr><th style="width:13%">日期/時間</th><th>A 前因<br>當下發生什麼</th><th>B 行為<br>捏誰、程度</th><th>C 後果<br>如何處理、結果</th><th style="width:14%">可能功能</th></tr>
+          </thead>
+          <tbody>
+            <tr><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="dl" id="dl-card">
+      <h3>下載 ABC 行為紀錄表（PDF）</h3>
+      <p>A4 直式、含填寫範例與空白欄位，可直接列印使用。</p>
+      <button class="btn" onclick="makePDF()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        下載 PDF
+      </button>
+      <small id="dl-status">點擊即可產生並下載檔案</small>
+    </div>
+  </section>
+</main>
+
+<footer>
+  本指引供教保員老師教學參考，實際處遇請依個案狀況與中心規範，並結合專業團隊評估。
+</footer>
+
+<script>
+// progress bar
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+  document.getElementById('progress').style.width=pct+'%';
+});
+
+// ABC PDF generator (vector layout, no Chinese-font dependency issue handled via canvas text)
+function makePDF(){
+  const status=document.getElementById('dl-status');
+  status.textContent='產生中…';
+  try{
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({unit:'mm',format:'a4'});
+    const pageW=210, pageH=297, m=14;
+
+    // Because jsPDF core fonts lack Chinese glyphs, render the whole sheet as a
+    // high-res canvas with the browser's own font, then place it as one image.
+    const scale=3;
+    const cw=pageW*scale*3.78, ch=pageH*scale*3.78; // mm->px approx
+    const c=document.createElement('canvas');
+    c.width=cw; c.height=ch;
+    const x=c.getContext('2d');
+    x.fillStyle='#ffffff'; x.fillRect(0,0,cw,ch);
+
+    const F='"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif';
+    const px=v=>v*scale*3.78;
+    const teal='#0f766e', ink='#1f2d2c', muted='#5b6f6d', line='#cfd8d6', soft='#d6ece9';
+
+    // title bar
+    x.fillStyle=teal; x.fillRect(px(14),px(14),px(182),px(16));
+    x.fillStyle='#fff'; x.font='bold '+px(7)+'px '+F; x.textBaseline='middle';
+    x.fillText('ABC 行為紀錄表', px(20), px(22.5));
+    x.font=px(3.6)+'px '+F;
+    x.fillText('前因 Antecedent ▸ 行為 Behavior ▸ 後果 Consequence', px(78), px(22.8));
+
+    // meta line
+    x.fillStyle=muted; x.font=px(3.8)+'px '+F; x.textBaseline='alphabetic';
+    x.fillText('個案姓名：________________    紀錄者：________________    單位：________________', px(14), px(40));
+
+    // table
+    const cols=[14,32,78,118,158,196];   // x positions in mm (5 cols)
+    const headers=['日期/時間','A 前因（當下發生什麼）','B 行為（捏誰、程度）','C 後果（處理與結果）','可能功能'];
+    const top=46, rowH=24, headH=12, rows=8;
+
+    // header row
+    x.fillStyle=soft; x.fillRect(px(cols[0]),px(top),px(cols[5]-cols[0]),px(headH));
+    x.fillStyle=teal; x.font='bold '+px(3.7)+'px '+F; x.textBaseline='middle';
+    for(let i=0;i<5;i++){ x.fillText(headers[i], px(cols[i]+2.5), px(top+headH/2)); }
+
+    // sample row
+    const sample=['__/__\n__:__','聲音突然變大\n活動被打斷','捏教保員手臂\n造成瘀青','圖卡制止「停」\n暫停活動,平靜後繼續','逃避噪音\n／表達不要'];
+    let yy=top+headH;
+    x.fillStyle='#fafdfc'; x.fillRect(px(cols[0]),px(yy),px(cols[5]-cols[0]),px(rowH));
+    x.fillStyle=muted; x.font='italic '+px(3.3)+'px '+F;
+    for(let i=0;i<5;i++){
+      const lines=sample[i].split('\n');
+      lines.forEach((ln,k)=> x.fillText('範例 '+ln, px(cols[i]+2.5), px(yy+6+k*5)));
+    }
+
+    // grid lines
+    x.strokeStyle=line; x.lineWidth=Math.max(1,scale);
+    const tableBottom=yy+rowH*rows;
+    // vertical
+    cols.forEach(cx=>{ x.beginPath(); x.moveTo(px(cx),px(top)); x.lineTo(px(cx),px(tableBottom)); x.stroke(); });
+    // horizontal
+    x.beginPath(); x.moveTo(px(cols[0]),px(top)); x.lineTo(px(cols[5]),px(top)); x.stroke();
+    x.beginPath(); x.moveTo(px(cols[0]),px(top+headH)); x.lineTo(px(cols[5]),px(top+headH)); x.stroke();
+    for(let r=0;r<rows;r++){
+      const ly=yy+rowH*(r+1);
+      x.beginPath(); x.moveTo(px(cols[0]),px(ly)); x.lineTo(px(cols[5]),px(ly)); x.stroke();
+    }
+
+    // function legend
+    x.fillStyle=ink; x.font='bold '+px(3.6)+'px '+F;
+    x.fillText('常見行為功能參考：', px(14), px(tableBottom+10));
+    x.fillStyle=muted; x.font=px(3.4)+'px '+F;
+    x.fillText('① 逃避（噪音/要求）　② 取得（想要某物/活動）　③ 引起注意　④ 感官自我刺激', px(14), px(tableBottom+16));
+    x.fillText('提醒：個案造成他人或員工瘀青時，務必同步通報主管並留存紀錄。', px(14), px(tableBottom+22));
+
+    const img=c.toDataURL('image/png');
+    doc.addImage(img,'PNG',0,0,pageW,pageH);
+    doc.save('ABC行為紀錄表.pdf');
+    status.textContent='已下載 ✓ ABC行為紀錄表.pdf';
+  }catch(e){
+    status.textContent='產生失敗，請改用桌面瀏覽器再試一次';
+    console.error(e);
+  }
+}
+</script>
+</body>
+</html>
